@@ -4,24 +4,32 @@ val scalaV = "2.11.8"
 
 // ---- kind projector for nicer type lambdas ----
 val kindProjectorPlugin = Seq(
-  addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.0")
+  addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.2")
 )
 
 // ---- library for nicer typeclasses
 val simulacrumPlugin = Seq(
   addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
-  libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.9.0"
+  libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
 )
 
 // ---- formatting ----
 
+scalaVersion in ThisBuild := scalaV
 scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
+
+// ---- ammonite ----
+
+val ammonite = Seq(
+  libraryDependencies += "com.lihaoyi" % "ammonite" % "0.7.8" % "test" cross CrossVersion.full,
+  initialCommands in (Test, console) := """ammonite.Main().run()"""
+)
 
 // ---- enable wartremover ----
 
 import wartremover.Wart._
 wartremoverWarnings in (Compile, compile) := Seq(
-  // Any, // needs to ignore BuildInfo
+  Any,
   Any2StringAdd,
   AsInstanceOf,
   DefaultArguments,
@@ -34,22 +42,22 @@ wartremoverWarnings in (Compile, compile) := Seq(
   IsInstanceOf,
   JavaConversions,
   LeakingSealed,
-  //ListOps, // not ready
-  //MutableDataStructures, // disagree, sometimes they are more clear
-  //NoNeedForMonad, // compiler dies! (v1.1.0)
-  //NonUnitStatements, // too non-scalaomatic
-  //Nothing, // too many nothings in scala
+  ListOps,
+  MutableDataStructures,
+  NoNeedForMonad,
+  NonUnitStatements,
+  Nothing,
   Null,
   Option2Iterable,
   OptionPartial,
-  //Overloading // problem with too many overloaded external APIs
-  //Product, // bugged (v1.1.0)
+  Overloading,
+  Product,
   Return,
-  //Serializable, // bugged (v.1.1.0)
+  Serializable,
   ToString,
   TryPartial,
-  Var,  // remove if performance is critical
-  While // remove if performance is critical
+  Var,
+  While
 )
 
 // ---- common settings ----
@@ -78,10 +86,8 @@ val commonSettings = Seq(
     "-Ywarn-unused",
     "-Ywarn-numeric-widen"
   )
-) ++ kindProjectorPlugin ++ simulacrumPlugin
+) ++ ammonite ++ kindProjectorPlugin ++ simulacrumPlugin
 
-libraryDependencies += "com.lihaoyi" % "ammonite" % "0.7.8" % "test" cross CrossVersion.full
-initialCommands in (Test, console) := """ammonite.Main().run()"""
 
 // ---- publising ----
 
@@ -99,8 +105,11 @@ lazy val scraper = Project(id = "scraper", base = file("modules/scraper"))
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-core" % "0.9.1",
       "org.jsoup" % "jsoup" % "1.9.2",
-      "org.typelevel" %% "cats" % "0.7.2"
+      "net.sourceforge.htmlunit" % "htmlunit" % "2.23",
+      //"org.typelevel" %% "cats" % "0.7.2",
+      "org.scalatest" %% "scalatest" % "3.0.0" % Test
     )
   )
 
@@ -108,9 +117,9 @@ lazy val scrawler = Project(id = "scrawler", base = file("modules/scrawler"))
     .settings(
       commonSettings,
       libraryDependencies ++= Seq(
-        "co.fs2" %% "fs2-core" % "0.9.1"
+        "org.scalatest" %% "scalatest" % "3.0.0" % Test
       )
-    )
+    ).dependsOn(scraper).aggregate(scraper)
 
 
 
