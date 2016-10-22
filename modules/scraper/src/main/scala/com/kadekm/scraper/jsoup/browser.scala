@@ -11,9 +11,11 @@ import org.jsoup.Jsoup
 sealed class JsoupBrowser[F[_]] private (val currentProxy: ProxySettings = ProxySettings(None, None, None))(
     implicit FI: Effect[F])
     extends Browser[F] {
-  override def fromUrl(url: String): F[Document] = FI.delay {
-    val doc = Jsoup.connect(url).get()
-    JsoupDocument(doc)
+  override def fromUrl(url: String): F[Document] = withProxy {
+    FI.delay {
+      val doc = Jsoup.connect(url).get()
+      JsoupDocument(doc)
+    }
   }
 }
 
