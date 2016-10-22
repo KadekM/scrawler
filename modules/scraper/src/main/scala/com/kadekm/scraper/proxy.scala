@@ -9,18 +9,12 @@ final case class ProxyTuple(host: String, port: Int)
 
 final case class ProxySettings(httpProxy: Option[ProxyTuple],
                                httpsProxy: Option[ProxyTuple],
-                               socksProxy: Option[ProxyTuple]) {
-  def applyToSystem[F[_]](implicit FI: Suspendable[F]): F[Unit] = for {
-    _ <- httpProxy.fold(FI.pure[Unit](())) (x => proxy.setHttpProxy(x.host, x.port))
-    _ <- httpsProxy.fold(FI.pure[Unit](())) (x => proxy.setHttpsProxy(x.host, x.port))
-    _ <- socksProxy.fold(FI.pure[Unit](())) (x => proxy.setHttpsProxy(x.host, x.port))
-  } yield ()
-}
+                               socksProxy: Option[ProxyTuple]) {}
 
 private[scraper] object proxy {
 
-  private[this] val HTTP_PROXY_HOST: String = "http.proxyHost"
-  private[this] val HTTP_PROXY_PORT: String = "http.proxyPort"
+  private[this] val HTTP_PROXY_HOST: String  = "http.proxyHost"
+  private[this] val HTTP_PROXY_PORT: String  = "http.proxyPort"
   private[this] val HTTPS_PROXY_PORT: String = "https.proxyPort"
   private[this] val HTTPS_PROXY_HOST: String = "https.proxyHost"
   private[this] val SOCKS_PROXY_HOST: String = "socksProxyHost"
@@ -100,11 +94,11 @@ private[scraper] object proxy {
     * Returns the current JVM-wide SOCKS proxy configuration.
     * @return the current JVM-wide SOCKS proxy configuration.
     */
-  def getSocksProxy[F[_]](implicit FI: FF[F]): F[Option[(String, Int)]] = FI.delay {
+  def getSocksProxy[F[_]](implicit FI: FF[F]): F[Option[ProxyTuple]] = FI.delay {
     for {
       host <- Option(System.getProperty(SOCKS_PROXY_HOST))
       port <- Option(System.getProperty(SOCKS_PROXY_PORT))
-    } yield (host, port.toInt)
+    } yield ProxyTuple(host, port.toInt)
   }
 
   /**
@@ -114,4 +108,24 @@ private[scraper] object proxy {
     System.clearProperty(SOCKS_PROXY_HOST)
     System.clearProperty(SOCKS_PROXY_PORT)
   }
+
+  /**
+    * Sets proxy to system
+    */
+  def setProxySettings[F[_]](settings: ProxySettings)(implicit FI: FF[F]): F[Unit] =
+    for {
+      _ <- settings.httpProxy.fold(FI.pure[Unit](()))(x => setHttpProxy(x.host, x.port))
+      _ <- settings.httpsProxy.fold(FI.pure[Unit](()))(x => setHttpsProxy(x.host, x.port))
+      _ <- settings.socksProxy.fold(FI.pure[Unit](()))(x => setHttpsProxy(x.host, x.port))
+    } yield ()
+
+  /**
+    * Reads current proxy settings
+    */
+  def getProxySettings[F[_]](implicit FI: FF[F]): F[ProxySettings] =
+    for {
+      http  <- getHttpProxy
+      https <- getHttpsProxy
+      socks <- getSocksProxy
+    } yield ProxySettings(http, https, socks)
 }
