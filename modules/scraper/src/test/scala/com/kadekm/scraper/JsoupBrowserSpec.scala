@@ -7,16 +7,15 @@ import com.kadekm.scraper.jsoup.JsoupBrowser
 import fs2._
 import fs2.Task._
 
-class SomeTest extends ScraperTest {
+class JsoupBrowserSpec extends ScraperTest {
 
-  "something" - {
-    "foo" in {
+  "JsoupBrowser" - {
+    "reading input stream" in {
       val is = resource("/building_materials.htm").get
-      val jsBrowser = JsoupBrowser[Task]
 
       val browser = JsoupBrowser.readInputStream[Task](is, StandardCharsets.UTF_8, "wikipedia.com")
-      //println(browser.unsafeRun)
 
+      browser.unsafeRun.root.tagName shouldBe "html"
     }
   }
 }
