@@ -15,7 +15,7 @@ class SomeTest extends ScraperTest {
       val jsBrowser = JsoupBrowser[Task]
 
       val browser = JsoupBrowser.readInputStream[Task](is, StandardCharsets.UTF_8, "wikipedia.com")
-      println(browser.unsafeRun)
+      //println(browser.unsafeRun)
 
     }
   }
