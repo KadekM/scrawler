@@ -5,7 +5,7 @@ import fs2.util._
 
 import fs2.util.syntax._
 
-abstract class Browser[F[_]: Effect] {
+abstract class Browser[F[_]](implicit FI: Effect[F]) {
   val currentProxy: ProxySettings
 
   def fromUrl(url: String): F[Document]
@@ -14,7 +14,10 @@ abstract class Browser[F[_]: Effect] {
     for {
       before <- proxy.getProxySettings[F]
       _      <- proxy.setProxySettings(currentProxy)
-      r      <- f
-      after  <- proxy.setProxySettings(before)
+      // Reset to `before` even on error
+      r      <- FI.attempt(f).flatMap {
+        case Right(x) => proxy.setProxySettings(before).map(_ => x)
+        case Left(e) => proxy.setProxySettings(before).flatMap(_ => FI.fail[A](e))
+      }
     } yield r
 }
