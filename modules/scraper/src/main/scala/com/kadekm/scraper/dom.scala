@@ -10,9 +10,13 @@ trait Document {
 }
 
 trait Element {
+  def select(query: String): Iterable[Element]
+
   def tagName: String
 
   def text: String
+
+  def attr(name: String): Option[String]
 
   def children: Iterable[Element]
 }
