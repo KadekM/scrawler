@@ -4,7 +4,6 @@ import java.io._
 
 import org.scalatest._
 import org.jsoup.Jsoup
-import com.kadekm.scrawler.Tmp._
 
 import scala.io.Source
 import Utils._
