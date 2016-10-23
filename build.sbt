@@ -102,7 +102,7 @@ lazy val scraper = Project(id = "scraper", base = file("modules/scraper")).setti
   commonSettings,
   libraryDependencies ++= Seq(
     "co.fs2"                   %% "fs2-core" % "0.9.1",
-    "org.jsoup"                % "jsoup"     % "1.9.2",
+    "org.jsoup"                % "jsoup"     % "1.10.1",
     "net.sourceforge.htmlunit" % "htmlunit"  % "2.23",
     //"org.typelevel" %% "cats" % "0.7.2",
     "org.scalatest" %% "scalatest" % "3.0.0" % Test
