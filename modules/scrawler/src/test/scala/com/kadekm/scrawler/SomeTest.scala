@@ -11,7 +11,7 @@ class SomeTest extends ScrawlerTest {
   // todo: proper tests
 
   implicit val strategy: Strategy = Strategy.fromFixedDaemonPool(128, "foo")
-  val browser = JsoupBrowser[Task]
+  val browser                     = JsoupBrowser[Task]
 
   "something" - {
     "sequential crawler" ignore {
@@ -20,16 +20,16 @@ class SomeTest extends ScrawlerTest {
 
         override protected def onDocument(document: Document): Stream[Pure, Yield[String]] = {
           val entries = for (title <- document.root.select("h2.entry-title"))
-              yield YieldData(title.text)
+            yield YieldData(title.text)
 
-         val next = for {
-           el <- document.root.select("div.prev-post > a").headOption
-           url <- el.attr("href")
-         } yield Visit(url)
+          val next = for {
+            el  <- document.root.select("div.prev-post > a").headOption
+            url <- el.attr("href")
+          } yield Visit(url)
 
           val nextLink = next match {
             case Some(x) => Stream(x)
-            case None => Stream.empty
+            case None    => Stream.empty
           }
 
           Stream.emits(entries.toSeq) ++ nextLink
@@ -49,10 +49,8 @@ class SomeTest extends ScrawlerTest {
           val title = for (title <- document.root.select("head > title"))
             yield YieldData(title.text)
 
-          val externalLinks = document.root.select("a[href^='https://']")
-            .map(_.attr("href").get)
-            .map(Visit)
-            .toSeq
+          val externalLinks =
+            document.root.select("a[href^='https://']").map(_.attr("href").get).map(Visit).toSeq
 
           Stream.emits(title.toSeq) ++ Stream.emits(externalLinks)
         }
@@ -73,10 +71,8 @@ class SomeTest extends ScrawlerTest {
           val title = for (title <- document.root.select("head > title"))
             yield YieldData(title.text)
 
-          val externalLinks = document.root.select("a[href^='https://']")
-            .map(_.attr("href").get)
-            .map(Visit)
-            .toSeq
+          val externalLinks =
+            document.root.select("a[href^='https://']").map(_.attr("href").get).map(Visit).toSeq
 
           Stream.emits(title.toSeq) ++ Stream.emits(externalLinks)
         }
@@ -88,4 +84,3 @@ class SomeTest extends ScrawlerTest {
     }
   }
 }
-

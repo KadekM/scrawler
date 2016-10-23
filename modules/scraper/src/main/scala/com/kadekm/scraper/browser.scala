@@ -20,9 +20,9 @@ abstract class Browser[F[_]](implicit FI: Effect[F]) {
       // for a bad time
 
       // Reset to `before` even on error
-      r      <- FI.attempt(f).flatMap {
+      r <- FI.attempt(f).flatMap {
         case Right(x) => proxy.setProxySettings(before).map(_ => x)
-        case Left(e) => proxy.setProxySettings(before).flatMap(_ => FI.fail[A](e))
+        case Left(e)  => proxy.setProxySettings(before).flatMap(_ => FI.fail[A](e))
       }
     } yield r
 }
