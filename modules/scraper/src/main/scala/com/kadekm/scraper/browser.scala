@@ -14,6 +14,11 @@ abstract class Browser[F[_]](implicit FI: Effect[F]) {
     for {
       before <- proxy.getProxySettings[F]
       _      <- proxy.setProxySettings(currentProxy)
+
+      // todo: not-good - mutating global state (even though in task)
+      // multiple browsers running concurrently in single jvm and you're in
+      // for a bad time
+
       // Reset to `before` even on error
       r      <- FI.attempt(f).flatMap {
         case Right(x) => proxy.setProxySettings(before).map(_ => x)

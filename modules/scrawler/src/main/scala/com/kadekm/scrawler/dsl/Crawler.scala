@@ -24,6 +24,8 @@ abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) {
 
   def url: String
 
+  def maxOpenConnections: Int
+
   // todo: can we do only single operation?
   def onElement(document: Document): PartialFunction[Element, Decision]
 
@@ -44,8 +46,7 @@ abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) {
       }
 
       case ParallelVisitUrls(urls) :: rest =>
-        // todo: hardcoded max open connections
-        concurrent.join(maxOpen = 8) {
+        concurrent.join(maxOpenConnections) {
           val par = urls.map(url => Stream.eval(browser.fromUrl(url)))
           Stream.emits(par)
         }.runLog.map { docs =>
