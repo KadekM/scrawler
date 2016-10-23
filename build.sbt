@@ -25,39 +25,43 @@ val ammonite = Seq(
   initialCommands in (Test, console) := """ammonite.Main().run()"""
 )
 
+ammonite // enable in root project
+
 // ---- enable wartremover ----
 
 import wartremover.Wart._
-wartremoverWarnings in (Compile, compile) := Seq(
-  Any,
-  Any2StringAdd,
-  AsInstanceOf,
-  DefaultArguments,
-  EitherProjectionPartial,
-  Enumeration,
-  Equals,
-  ExplicitImplicitTypes,
-  FinalCaseClass,
-  ImplicitConversion,
-  IsInstanceOf,
-  JavaConversions,
-  LeakingSealed,
-  ListOps,
-  MutableDataStructures,
-  NoNeedForMonad,
-  NonUnitStatements,
-  Nothing,
-  Null,
-  Option2Iterable,
-  OptionPartial,
-  Overloading,
-  Product,
-  Return,
-  Serializable,
-  ToString,
-  TryPartial,
-  Var,
-  While
+val wartRemover = Seq(
+  wartremoverWarnings in (Compile, compile) := Seq(
+    Any,
+    Any2StringAdd,
+    AsInstanceOf,
+    DefaultArguments,
+    EitherProjectionPartial,
+    Enumeration,
+    Equals,
+    ExplicitImplicitTypes,
+    FinalCaseClass,
+    ImplicitConversion,
+    IsInstanceOf,
+    JavaConversions,
+    LeakingSealed,
+    ListOps,
+    MutableDataStructures,
+    NoNeedForMonad,
+    NonUnitStatements,
+    Nothing,
+    Null,
+    Option2Iterable,
+    OptionPartial,
+    Overloading,
+    Product,
+    Return,
+    Serializable,
+    ToString,
+    TryPartial,
+    Var,
+    While
+  )
 )
 
 // ---- common settings ----
@@ -84,7 +88,7 @@ val commonSettings = Seq(
       "-Ywarn-unused",
       "-Ywarn-numeric-widen"
     )
-  ) ++ ammonite ++ kindProjectorPlugin ++ simulacrumPlugin
+  ) ++ ammonite ++ wartRemover ++ kindProjectorPlugin ++ simulacrumPlugin
 
 // ---- publising ----
 
