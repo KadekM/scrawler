@@ -1,6 +1,7 @@
 name := "scrawler"
 
 val scalaV = "2.11.8"
+val crossScalaV = Seq("2.11.8", "2.12.0-RC2")
 
 // ---- kind projector for nicer type lambdas ----
 val kindProjectorPlugin = Seq(
