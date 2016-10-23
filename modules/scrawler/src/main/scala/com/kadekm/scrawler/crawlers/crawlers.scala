@@ -9,22 +9,19 @@ sealed trait Yield[+A]
 final case class YieldData[A](a: A) extends Yield[A]
 final case class Visit(url: String) extends Yield[Nothing]
 
-// TODO api would probably be better if there was single crawler with 2 methods (parallel, single)
-// and taking url/maxOpenCon etc. as arguments
-
-abstract class Crawler[F[_]: Async, A] {
-
-  def stream: Stream[F, A]
-
+trait SequentialCrawlingCapability[F[_], A] {
+  def sequentialCrawl(url: String): Stream[F, A]
 }
 
-abstract class SequentialCrawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) extends Crawler[F, A] {
+trait ParallelCrawlingCapability[F[_], A] {
+  def parallelCrawl(url: String, maxConnections: Int): Stream[F, A]
+}
 
-  def url: String
+abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) extends SequentialCrawlingCapability[F, A] with ParallelCrawlingCapability[F, A] {
 
   protected def onDocument(document: Document): Stream[Pure, Yield[A]]
 
-  final def stream: Stream[F, A] =
+  override def sequentialCrawl(url: String): Stream[F, A] =
     Stream
       .unfoldEval[F, List[Yield[A]], Option[A]](List[Yield[A]](Visit(url))) {
         case (u @ Visit(url)) :: rest =>
@@ -43,17 +40,7 @@ abstract class SequentialCrawler[F[_], A](browser: Browser[F])(implicit FI: Asyn
         case Some(a) => a
       }
 
-}
-
-abstract class ParallelCrawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) extends Crawler[F, A] {
-
-  def url: String
-
-  def maxOpenConnections: Int
-
-  protected def onDocument(document: Document): Stream[Pure, Yield[A]]
-
-  final def stream: Stream[F, A] =
+  override def parallelCrawl(url: String, maxConnections: Int): Stream[F, A] =
     Stream
       .unfoldEval[F, List[Yield[A]], Option[Seq[A]]](List[Yield[A]](Visit(url))) { xs =>
         if (xs.isEmpty) FI.pure(None) // if there is nothing, stop the computation!
@@ -65,7 +52,7 @@ abstract class ParallelCrawler[F[_], A](browser: Browser[F])(implicit FI: Async[
           // If there is nothing to yield, run all visitings in parallel
           if (yields.isEmpty) {
             concurrent
-              .join(maxOpenConnections) {
+              .join(maxConnections) {
                 val streams = visits.map(v => Stream.eval(browser.fromUrl(v.url)))
                 Stream.emits(streams)
               }

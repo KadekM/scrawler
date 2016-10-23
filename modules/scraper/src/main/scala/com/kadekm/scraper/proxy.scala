@@ -9,12 +9,12 @@ object proxy {
 
     def http(host: String, port: Int): ProxySettings = {
       val proxy = new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, port))
-      new ProxySettings(proxy){}
+      new ProxySettings(proxy) {}
     }
 
     def socks(address: InetSocketAddress): ProxySettings = {
       val proxy = new Proxy(Proxy.Type.SOCKS, address)
-      new ProxySettings(proxy){}
+      new ProxySettings(proxy) {}
     }
 
     def none: ProxySettings = new ProxySettings(java.net.Proxy.NO_PROXY) {}
