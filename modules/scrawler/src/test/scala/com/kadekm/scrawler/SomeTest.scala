@@ -19,6 +19,8 @@ class SomeTest extends ScrawlerTest {
       val wikiCrawler = new Crawler[Task, String](browser) {
         override val url = "https://en.wikipedia.org/wiki/Main_Page"
 
+        override def maxOpenConnections: Int = 8
+
         // such links that begins with https and have `external` class
         val allAtags = Css("a[href^='https://'].external")
 
