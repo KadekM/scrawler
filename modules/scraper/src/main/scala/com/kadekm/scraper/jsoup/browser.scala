@@ -9,7 +9,7 @@ import fs2._
 import fs2.util._
 import org.jsoup.Jsoup
 
-sealed class JsoupBrowser[F[_]] private(val proxySettings: Option[ProxySettings] = Option.empty)(
+sealed class JsoupBrowser[F[_]] private (val proxySettings: Option[ProxySettings] = Option.empty)(
     implicit FI: Effect[F])
     extends Browser[F] {
   override def fromUrl(url: String): F[Document] =
