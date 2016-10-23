@@ -5,7 +5,7 @@ import com.kadekm.scraper.jsoup.JsoupBrowser
 import com.kadekm.scrawler.dsl._
 import com.kadekm.scraper.extractors._
 
-import fs2.{Strategy, Task}
+import fs2._
 
 class SomeTest extends ScrawlerTest {
 
@@ -17,27 +17,30 @@ class SomeTest extends ScrawlerTest {
       val browser = JsoupBrowser[Task]
 
       val wikiCrawler = new Crawler[Task, String](browser) {
-        override val url = "https://en.wikipedia.org/wiki/Main_Page"
+        override val url = "https://blog.scrapinghub.com"
 
-        override def maxOpenConnections: Int = 8
+        //override def maxOpenConnections: Int = 8
 
-        // such links that begins with https and have `external` class
-        val allAtags = Css("a[href^='https://'].external")
+        override protected def onDocument(document: Document): Stream[Pure, Yield[String]] = {
+          val entries = for (title <- document.root.select("h2.entry-title"))
+              yield YieldData(title.text)
 
-        val titleSelect = Css("head title")
+         val next = for {
+           el <- document.root.select("div.prev-post > a").headOption
+           url <- el.attr("href")
+         } yield Visit(url)
 
-        override def onElement(document: Document) = {
-          case el @ allAtags(atags) if document.location.contains("wikipedia.org") =>
-            ParallelVisitUrls(atags.map(_.attr("href").get).toSeq)
+          val nextLink = next match {
+            case Some(x) => Stream(x)
+            case None => Stream.empty
+          }
 
-          case other @ titleSelect(title) =>
-            YieldData(title.head.text)
+          Stream.emits(entries.toSeq) ++ nextLink
         }
-
       }
 
       val result = wikiCrawler.stream.runLog.unsafeRun
-      println(result)
+      println(result.mkString("\n\n"))
       println("done")
     }
   }
