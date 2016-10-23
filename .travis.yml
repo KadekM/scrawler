@@ -7,6 +7,10 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION clean coverage test
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION coverageReport coveralls
+  # enable once we start publishing to Maven - every commit should be as snapshot
+  #- if [ "$TRAVIS_BRANCH" == "dev" ]; then
+  #      sbt ++$TRAVIS_SCALA_VERSION publish;
+  #      fi
 cache:
   directories:
     - $HOME/.ivy2/cache
