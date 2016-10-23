@@ -2,4 +2,4 @@
 
 ## SCRAWLER
 
-Greatly inspired by awesome [https://github.com/ruippeixotog/scala-scraper](Rui's scala-scraper). Thank you!
+Greatly inspired by awesome [https://github.com/ruippeixotog/scala-scraper](Rui's scala-scraper) and python's Scrapy. Thank you!

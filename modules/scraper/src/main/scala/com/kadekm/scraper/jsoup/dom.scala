@@ -4,7 +4,8 @@ import com.kadekm.scraper._
 import scala.collection.convert.WrapAsScala._
 
 final case class JsoupElement(underlying: org.jsoup.nodes.Element) extends Element {
-  override def select(query: String): Iterable[Element] = underlying.select(query).toIterable.map(JsoupElement)
+  override def select(query: String): Iterable[Element] =
+    underlying.select(query).toIterable.map(JsoupElement)
 
   override def tagName: String = underlying.tagName
 

@@ -63,31 +63,28 @@ wartremoverWarnings in (Compile, compile) := Seq(
 // ---- common settings ----
 
 val commonSettings = Seq(
-  organization := "com.kadekm",
-
-  scalaVersion := scalaV,
-  scalacOptions := Seq(
-    // following two lines must be "together"
-    "-encoding",
-    "UTF-8",
-
-    "-Xlint",
-    "-Xlint:missing-interpolator",
-    "-deprecation",
-    "-feature",
-    "-unchecked",
-    "-Ywarn-dead-code",
-    "-Yno-adapted-args",
-    "-language:existentials",
-    "-language:higherKinds",
-    "-language:implicitConversions",
-    "-Ywarn-value-discard",
-    "-Ywarn-unused-import",
-    "-Ywarn-unused",
-    "-Ywarn-numeric-widen"
-  )
-) ++ ammonite ++ kindProjectorPlugin ++ simulacrumPlugin
-
+    organization := "com.kadekm",
+    scalaVersion := scalaV,
+    scalacOptions := Seq(
+      // following two lines must be "together"
+      "-encoding",
+      "UTF-8",
+      "-Xlint",
+      "-Xlint:missing-interpolator",
+      "-deprecation",
+      "-feature",
+      "-unchecked",
+      "-Ywarn-dead-code",
+      "-Yno-adapted-args",
+      "-language:existentials",
+      "-language:higherKinds",
+      "-language:implicitConversions",
+      "-Ywarn-value-discard",
+      "-Ywarn-unused-import",
+      "-Ywarn-unused",
+      "-Ywarn-numeric-widen"
+    )
+  ) ++ ammonite ++ kindProjectorPlugin ++ simulacrumPlugin
 
 // ---- publising ----
 
@@ -101,25 +98,23 @@ val publishSettings = Seq()
 
 // ---- modules ----
 
-lazy val scraper = Project(id = "scraper", base = file("modules/scraper"))
+lazy val scraper = Project(id = "scraper", base = file("modules/scraper")).settings(
+  commonSettings,
+  libraryDependencies ++= Seq(
+    "co.fs2"                   %% "fs2-core" % "0.9.1",
+    "org.jsoup"                % "jsoup"     % "1.9.2",
+    "net.sourceforge.htmlunit" % "htmlunit"  % "2.23",
+    //"org.typelevel" %% "cats" % "0.7.2",
+    "org.scalatest" %% "scalatest" % "3.0.0" % Test
+  )
+)
+
+lazy val scrawler = Project(id = "scrawler", base = file("modules/scrawler"))
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "0.9.1",
-      "org.jsoup" % "jsoup" % "1.9.2",
-      "net.sourceforge.htmlunit" % "htmlunit" % "2.23",
-      //"org.typelevel" %% "cats" % "0.7.2",
       "org.scalatest" %% "scalatest" % "3.0.0" % Test
     )
   )
-
-lazy val scrawler = Project(id = "scrawler", base = file("modules/scrawler"))
-    .settings(
-      commonSettings,
-      libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % "3.0.0" % Test
-      )
-    ).dependsOn(scraper).aggregate(scraper)
-
-
-
+  .dependsOn(scraper)
+  .aggregate(scraper)
