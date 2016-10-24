@@ -1,9 +1,8 @@
-package com.kadekm.scrawler
+package com.marekkadek.scrawler
 
-import com.kadekm.scraper._
-import com.kadekm.scraper.jsoup.JsoupBrowser
-import com.kadekm.scrawler.crawlers._
-
+import com.marekkadek.scraper.Document
+import com.marekkadek.scraper.jsoup.JsoupBrowser
+import com.marekkadek.scrawler.crawlers._
 import fs2._
 
 class SomeTest extends ScrawlerTest {

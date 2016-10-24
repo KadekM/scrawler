@@ -1,4 +1,4 @@
-package com.kadekm.scraper
+package com.marekkadek.scrawler
 
 import java.io.InputStream
 

@@ -1,7 +1,7 @@
-package com.kadekm.scraper.htmlunit
+package com.marekkadek.scraper.htmlunit
 
 import com.gargoylesoftware.htmlunit.{WebWindow => HtmlUnitWebWindow, html => htmlunit}
-import com.kadekm.scraper._
+import com.marekkadek.scraper.{Document, Element}
 
 import scala.collection.convert.WrapAsScala._
 

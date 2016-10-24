@@ -1,6 +1,6 @@
-package com.kadekm.scrawler.crawlers
+package com.marekkadek.scrawler.crawlers
 
-import com.kadekm.scraper._
+import com.marekkadek.scraper._
 import fs2._
 import fs2.util._
 import fs2.util.syntax._

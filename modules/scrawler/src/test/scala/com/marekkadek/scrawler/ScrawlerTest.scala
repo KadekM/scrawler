@@ -1,4 +1,4 @@
-package com.kadekm.scrawler
+package com.marekkadek.scrawler
 
 import org.scalatest._
 

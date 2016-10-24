@@ -1,3 +1,3 @@
-package com.kadekm
+package com.marekkadek
 
 package object scraper {}

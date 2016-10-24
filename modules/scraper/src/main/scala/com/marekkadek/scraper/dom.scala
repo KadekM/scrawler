@@ -1,4 +1,4 @@
-package com.kadekm.scraper
+package com.marekkadek.scraper
 
 /**
   * Represents HTML Document
