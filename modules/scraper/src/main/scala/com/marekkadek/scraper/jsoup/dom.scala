@@ -1,5 +1,6 @@
-package com.kadekm.scraper.jsoup
-import com.kadekm.scraper._
+package com.marekkadek.scraper.jsoup
+
+import com.marekkadek.scraper.{Document, Element}
 
 import scala.collection.convert.WrapAsScala._
 

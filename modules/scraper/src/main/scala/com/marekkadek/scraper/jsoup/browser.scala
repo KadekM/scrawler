@@ -1,11 +1,7 @@
-package com.kadekm.scraper.jsoup
+package com.marekkadek.scraper.jsoup
 
-import java.io.InputStream
-import java.nio.charset.Charset
-
-import com.kadekm.scraper._
-import com.kadekm.scraper.proxy.ProxySettings
-import fs2._
+import com.marekkadek.scraper.{Browser, Document}
+import com.marekkadek.scraper.proxy.ProxySettings
 import fs2.util._
 import org.jsoup.Jsoup
 

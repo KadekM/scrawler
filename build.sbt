@@ -64,7 +64,7 @@ val wartRemover = Seq(
 // ---- common settings ----
 
 val commonSettings = Seq(
-    organization := "com.kadekm",
+    organization := "com.marekkadek",
     scalaVersion := scalaV,
     crossScalaVersions := crossScalaV,
     scalacOptions := Seq(
@@ -97,12 +97,42 @@ val noPublishSettings = Seq(
   publishArtifact := false
 )
 
-val publishSettings = Seq()
+val publishSettings = Seq(
+  homepage := Some(url("https://github.com/KadekM/scrawler")),
+  organizationHomepage := Some(url("https://github.com/KadekM/scrawler")),
+  licenses += ("MIT license", url("http://www.opensource.org/licenses/mit-license.php")),
+  publishMavenStyle := true,
+  publishArtifact in Test := false,
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  },
+  pomIncludeRepository := { _ =>
+    false
+  },
+  pomExtra :=
+    <scm>
+      <url>git@github.com:kadekm/scrawler.git</url>
+      <connection>scm:git:git@github.com:kadekm/scrawler.git</connection>
+    </scm>
+      <developers>
+        <developer>
+          <id>kadekm</id>
+          <name>Marek Kadek</name>
+          <url>https://github.com/KadekM</url>
+        </developer>
+      </developers>
+)
 
 // ---- modules ----
 
 lazy val scraper = Project(id = "scraper", base = file("modules/scraper")).settings(
   commonSettings,
+  publishSettings,
   libraryDependencies ++= Seq(
     "co.fs2"                   %% "fs2-core" % "0.9.1",
     "org.jsoup"                % "jsoup"     % "1.10.1",
@@ -115,6 +145,7 @@ lazy val scraper = Project(id = "scraper", base = file("modules/scraper")).setti
 lazy val scrawler = Project(id = "scrawler", base = file("modules/scrawler"))
   .settings(
     commonSettings,
+    publishSettings,
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.0.0" % Test
     )
@@ -123,6 +154,9 @@ lazy val scrawler = Project(id = "scrawler", base = file("modules/scrawler"))
   .aggregate(scraper)
 
 lazy val root = Project(id = "root", base = file("."))
-  .settings(commonSettings)
+  .settings(
+    commonSettings,
+    noPublishSettings
+  )
   .dependsOn(scraper, scrawler)
   .aggregate(scraper, scrawler)

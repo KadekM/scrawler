@@ -1,11 +1,11 @@
-package com.kadekm.scraper
+package com.marekkadek.scraper
 
 import java.nio.charset.StandardCharsets
 
-import Utils._
-import com.kadekm.scraper.jsoup.JsoupBrowser
+import com.marekkadek.scraper.jsoup.JsoupBrowser
 import fs2._
 import fs2.Task._
+import Utils._
 
 class JsoupBrowserSpec extends ScraperTest {
 
