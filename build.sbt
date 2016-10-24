@@ -1,6 +1,7 @@
-name := "scrawler"
 
 val scalaV = "2.11.8"
+val crossScalaV = Seq("2.11.8", "2.12.0-RC2")
+
 
 // ---- kind projector for nicer type lambdas ----
 val kindProjectorPlugin = Seq(
@@ -14,18 +15,14 @@ val simulacrumPlugin = Seq(
 )
 
 // ---- formatting ----
-
 scalaVersion in ThisBuild := scalaV
 scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
 
 // ---- ammonite ----
-
 val ammonite = Seq(
-  libraryDependencies += "com.lihaoyi" % "ammonite" % "0.7.8" % "test" cross CrossVersion.full,
-  initialCommands in (Test, console) := """ammonite.Main().run()"""
-)
-
-ammonite // enable in root project
+      libraryDependencies += "com.lihaoyi" % "ammonite" % "0.7.8" % "test" cross CrossVersion.full,
+      initialCommands in(Test, console) := """ammonite.Main().run()"""
+    )
 
 // ---- enable wartremover ----
 
@@ -69,6 +66,7 @@ val wartRemover = Seq(
 val commonSettings = Seq(
     organization := "com.kadekm",
     scalaVersion := scalaV,
+    crossScalaVersions := crossScalaV,
     scalacOptions := Seq(
       // following two lines must be "together"
       "-encoding",
@@ -88,7 +86,8 @@ val commonSettings = Seq(
       "-Ywarn-unused",
       "-Ywarn-numeric-widen"
     )
-  ) ++ ammonite ++ wartRemover ++ kindProjectorPlugin ++ simulacrumPlugin
+  // Ammonite is not yet for scala 2.12
+  ) ++ wartRemover ++ kindProjectorPlugin ++ simulacrumPlugin // ++ ammonite
 
 // ---- publising ----
 
@@ -122,3 +121,8 @@ lazy val scrawler = Project(id = "scrawler", base = file("modules/scrawler"))
   )
   .dependsOn(scraper)
   .aggregate(scraper)
+
+lazy val root = Project(id = "root", base = file("."))
+  .settings(commonSettings)
+  .dependsOn(scraper, scrawler)
+  .aggregate(scraper, scrawler)
