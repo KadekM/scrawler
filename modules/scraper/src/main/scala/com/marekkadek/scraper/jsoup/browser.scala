@@ -3,18 +3,24 @@ package com.marekkadek.scraper.jsoup
 import com.marekkadek.scraper.{Browser, Document}
 import com.marekkadek.scraper.proxy.ProxySettings
 import fs2.util._
-import org.jsoup.Jsoup
+import org.jsoup.{Connection, Jsoup}
 
 sealed class JsoupBrowser[F[_]] private (val proxySettings: Option[ProxySettings] = Option.empty)(
     implicit FI: Effect[F])
     extends Browser[F] {
   override def fromUrl(url: String): F[Document] =
     FI.delay {
+      //println(s"${Thread.currentThread.getName} > $url") // todo: remove :)
+
       val con = Jsoup.connect(url)
+
+      con.followRedirects(true)
       proxySettings.foreach(x => con.proxy(x.proxy))
 
-      val doc = con.get()
-      JsoupDocument(doc)
+      // todo (#19) execute() may throw exceptions
+      val r = con.execute()
+
+      JsoupDocument(r.parse)
     }
 }
 
