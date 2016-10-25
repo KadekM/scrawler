@@ -19,14 +19,18 @@ trait ParallelCrawlingCapability[F[_], A] {
 
 abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) extends SequentialCrawlingCapability[F, A] with ParallelCrawlingCapability[F, A] {
 
-  protected def onDocument(document: Document): Stream[Pure, Yield[A]]
+  protected def onDocument(document: Document): Stream[F, Yield[A]]
 
   override def sequentialCrawl(url: String): Stream[F, A] =
     Stream
       .unfoldEval[F, List[Yield[A]], Option[A]](List[Yield[A]](Visit(url))) {
-        case (u @ Visit(url2)) :: rest =>
-          browser.fromUrl(url2).map(onDocument).map(_.toList).map { xs =>
-            Some((None, rest ::: xs))
+
+        case (u @ Visit(url)) :: rest =>
+          // run the stream, executing it's effects in process
+          browser.fromUrl(url).map(onDocument).flatMap { stream =>
+            stream.runLog.map { xs =>
+              Some((None, rest ::: xs.toList))
+            }
           }
 
         case (u @ YieldData(data)) :: rest =>
@@ -57,12 +61,19 @@ abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) exte
                 Stream.emits(streams)
               }
               .runLog
-              .map { docs =>
-                val next = docs.map(onDocument).flatMap(_.toList)
-
-                // don't yield anything (since we're just visiting all pages), and set next step to be yielded stuff
-                // - we don't need to concatenate, since `yields` were empty and we have just executed all `visits`
-                Some((Option.empty[Seq[A]], next.toList))
+              .flatMap { docs =>
+                docs
+                  .map(onDocument) // stream of work
+                  //evaluate effects -> each yields sequence of work in effect F,
+                  // so to avoid Seq[F[Seq[_]] we traverse to F[Seq[Seq[_]]
+                  // and flatten
+                  .parallelTraverse(_.runLog)
+                  .map(_.flatten)
+                  .map { next =>
+                    // don't yield anything (since we're just visiting all pages), and set next step to be yielded stuff
+                    // - we don't need to concatenate, since `yields` were empty and we have just executed all `visits`
+                    Some((Option.empty[Seq[A]], next.toList))
+                  }
               }
           } else {
             // If there is something to yield, yield it all
