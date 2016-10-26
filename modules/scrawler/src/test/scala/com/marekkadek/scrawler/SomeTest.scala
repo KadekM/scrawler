@@ -17,9 +17,9 @@ class SomeTest extends ScrawlerTest {
       val url = "https://blog.scrapinghub.com"
 
       val wikiCrawler = new Crawler[Task, String](browser) {
-        override protected def onDocument(document: Document): Stream[Pure, Yield[String]] = {
+        override protected def onDocument(document: Document): Stream[Task, Yield[String]] = {
           val entries = for (title <- document.root.select("h2.entry-title"))
-            yield YieldData(title.text)
+            yield YieldData(s"${document.location} - ${title.text}")
 
           val next = for {
             el  <- document.root.select("div.prev-post > a").headOption
@@ -44,9 +44,9 @@ class SomeTest extends ScrawlerTest {
       val url = "https://en.wikipedia.org/wiki/Main_Page"
 
       val wikiCrawler = new Crawler[Task, String](browser) {
-        override protected def onDocument(document: Document): Stream[Pure, Yield[String]] = {
+        override protected def onDocument(document: Document): Stream[Task, Yield[String]] = {
           val title = for (title <- document.root.select("head > title"))
-            yield YieldData(title.text)
+            yield YieldData(s"${document.location} - ${title.text}")
 
           val externalLinks =
             document.root.select("a[href^='https://']").map(_.attr("href").get).map(Visit).toSeq
@@ -65,9 +65,9 @@ class SomeTest extends ScrawlerTest {
       val maxOpenConnections: Int = 30
 
       val wikiCrawler = new Crawler[Task, String](browser) {
-        override protected def onDocument(document: Document): Stream[Pure, Yield[String]] = {
+        override protected def onDocument(document: Document): Stream[Task, Yield[String]] = {
           val title = for (title <- document.root.select("head > title"))
-            yield YieldData(title.text)
+            yield YieldData(s"${document.location} - ${title.text}")
 
           val externalLinks =
             document.root.select("a[href^='https://']").map(_.attr("href").get).map(Visit).toSeq
