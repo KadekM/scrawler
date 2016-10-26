@@ -30,7 +30,8 @@ trait CompareCrawling extends ScrawlerTest with BrowserAgnostic[Task] {
       info(s"crawling $url")
       info(s"sequential crawl time: ${d1/1000000.0}s")
       info(s"parallel crawl time: ${d2/1000000.0}s")
-      d2 should be < d1
+      // at least twice as fast
+      2*d2 should be < d1
     }
   }
 }
