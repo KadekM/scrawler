@@ -24,8 +24,8 @@ abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) exte
   override def sequentialCrawl(url: String): Stream[F, A] =
     Stream
       .unfoldEval[F, List[Yield[A]], Option[A]](List[Yield[A]](Visit(url))) {
-        case (u @ Visit(url)) :: rest =>
-          browser.fromUrl(url).map(onDocument).map(_.toList).map { xs =>
+        case (u @ Visit(url2)) :: rest =>
+          browser.fromUrl(url2).map(onDocument).map(_.toList).map { xs =>
             Some((None, rest ::: xs))
           }
 

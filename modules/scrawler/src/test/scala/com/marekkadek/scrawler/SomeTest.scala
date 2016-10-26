@@ -76,8 +76,11 @@ class SomeTest extends ScrawlerTest {
         }
       }
 
-      val result = wikiCrawler.parallelCrawl(url, maxOpenConnections).take(20).runLog.unsafeRun
-      println(result.mkString("\n\n"))
+      val result = wikiCrawler
+        .parallelCrawl(url, maxOpenConnections)
+        .take(100)
+        .evalMap(x => Task.delay { println(s"${Thread.currentThread} $x");x })
+        .run.unsafeRun
       println("done")
     }
   }
