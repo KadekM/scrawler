@@ -16,11 +16,10 @@ trait SequentialCrawlingCapability[F[_], A] {
 }
 
 trait ParallelCrawlingCapability[F[_], A] {
-  def parallelCrawl(url: String, maxConnections: Int): Stream[F, A]
+  def parallelCrawl(url: String, maxConnections: Int)(implicit AI: Async[F]): Stream[F, A]
 }
 
-// TODO: the Async should be probably required only in parllel crawl
-abstract class Crawler[F[_], A](browsers: Seq[Browser[F]])(implicit FI: Async[F])
+abstract class Crawler[F[_], A](browsers: Seq[Browser[F]])(implicit FI: Effect[F])
     extends SequentialCrawlingCapability[F, A]
     with ParallelCrawlingCapability[F, A] {
 
@@ -54,7 +53,7 @@ abstract class Crawler[F[_], A](browsers: Seq[Browser[F]])(implicit FI: Async[F]
         case Some(a) => a
       }
 
-  override def parallelCrawl(url: String, maxConnections: Int): Stream[F, A] =
+  override def parallelCrawl(url: String, maxConnections: Int)(implicit AI: Async[F]): Stream[F, A] =
     Stream
       .unfoldEval[F, List[Yield[A]], Option[Seq[A]]](List[Yield[A]](Visit(url))) { xs =>
         if (xs.isEmpty) FI.pure(None) // if there is nothing, stop the computation!
