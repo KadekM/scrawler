@@ -10,7 +10,7 @@ trait ParallelCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
 
   implicit val s: Strategy = Strategy.fromFixedDaemonPool(maxThreads = 64, "test")
 
-  val bot: ParallelCrawlingCapability[Task, String] = new HttpsLinksInfiniteCrawler(browser)
+  val bot: ParallelCrawlingCapability[Task, String] = new HttpsLinksInfiniteCrawler(browsers)
 
   "something" - {
     "somewhere" ignore {

@@ -5,6 +5,8 @@ import fs2._
 import fs2.util._
 import fs2.util.syntax._
 
+import scala.util.Random
+
 sealed trait Yield[+A]
 final case class YieldData[A](a: A) extends Yield[A]
 final case class Visit(url: String) extends Yield[Nothing]
@@ -17,11 +19,17 @@ trait ParallelCrawlingCapability[F[_], A] {
   def parallelCrawl(url: String, maxConnections: Int): Stream[F, A]
 }
 
-abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F])
+// TODO: the Async should be probably required only in parllel crawl
+abstract class Crawler[F[_], A](browsers: Seq[Browser[F]])(implicit FI: Async[F])
     extends SequentialCrawlingCapability[F, A]
     with ParallelCrawlingCapability[F, A] {
 
   protected def onDocument(document: Document): Stream[F, Yield[A]]
+
+  protected def pickBrowser(forUrl: String): F[Browser[F]] = FI.delay[Browser[F]] {
+    val r = new Random()
+    browsers(r.nextInt(browsers.size))
+  }
 
   override def sequentialCrawl(url: String): Stream[F, A] =
     Stream
@@ -29,11 +37,11 @@ abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F])
 
         case (u @ Visit(url)) :: rest =>
           // run the stream, executing it's effects in process
-          browser.fromUrl(url).map(onDocument).flatMap { stream =>
-            stream.runLog.map { xs =>
-              Some((None, rest ::: xs.toList))
-            }
-          }
+          for {
+            browser  <- pickBrowser(url)
+            document <- browser.fromUrl(url)
+            result   <- onDocument(document).runLog.map(xs => Some((None, rest ::: xs.toList)))
+          } yield result
 
         case (u @ YieldData(data)) :: rest =>
           FI.pure {
@@ -59,7 +67,13 @@ abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F])
           if (yields.isEmpty) {
             concurrent
               .join(maxConnections) {
-                val streams = visits.map(v => Stream.eval(browser.fromUrl(v.url)))
+                val streams = visits.map(v =>
+                  Stream.eval {
+                    for {
+                      browser  <- pickBrowser(v.url)
+                      document <- browser.fromUrl(v.url)
+                    } yield document
+                })
                 Stream.emits(streams)
               }
               .runLog
