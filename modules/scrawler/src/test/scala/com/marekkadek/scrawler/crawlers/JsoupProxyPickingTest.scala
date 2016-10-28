@@ -9,8 +9,8 @@ import fs2._
 sealed class WhatsMyIpChecker(browsers: Seq[Browser[Task]])(implicit S: Strategy)
     extends Crawler[Task, String](browsers) {
   override protected def onDocument(document: Document): Stream[Task, Yield[String]] = {
-    document.root.select("span#ip").headOption match {
-      case Some(x) => Stream.emit(YieldData(x.text))
+    document.root.select("h1.ip > input").headOption.flatMap(_.attr("value")) match {
+      case Some(x) => Stream.emit(YieldData(x))
       case None    => Stream.empty
     }
   }
@@ -23,7 +23,7 @@ class JsoupProxyPickingTest extends ScrawlerTest {
 
   implicit val strategy: Strategy = Strategy.fromFixedDaemonPool(8)
 
-  val whatsmyip = "http://www.whatsmyip.org"
+  val whatsmyip = "http://whatsmyip.net/"
 
   // from http://proxylist.hidemyass.com
   val proxies: Seq[ProxySettings] = Seq(
