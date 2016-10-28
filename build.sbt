@@ -1,7 +1,5 @@
-
-val scalaV = "2.11.8"
+val scalaV      = "2.11.8"
 val crossScalaV = Seq("2.11.8", "2.12.0-RC2")
-
 
 // ---- kind projector for nicer type lambdas ----
 val kindProjectorPlugin = Seq(
@@ -16,13 +14,13 @@ val simulacrumPlugin = Seq(
 
 // ---- formatting ----
 scalaVersion in ThisBuild := scalaV
-scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
+scalafmtConfig in ThisBuild := Some(file(".scalafmt.conf"))
 
 // ---- ammonite ----
 val ammonite = Seq(
-      libraryDependencies += "com.lihaoyi" % "ammonite" % "0.7.8" % "test" cross CrossVersion.full,
-      initialCommands in(Test, console) := """ammonite.Main().run()"""
-    )
+  libraryDependencies += "com.lihaoyi" % "ammonite" % "0.7.8" % "test" cross CrossVersion.full,
+  initialCommands in (Test, console) := """ammonite.Main().run()"""
+)
 
 // ---- enable wartremover ----
 
@@ -86,7 +84,7 @@ val commonSettings = Seq(
       "-Ywarn-unused",
       "-Ywarn-numeric-widen"
     )
-  // Ammonite is not yet for scala 2.12
+    // Ammonite is not yet for scala 2.12
   ) ++ wartRemover ++ kindProjectorPlugin ++ simulacrumPlugin // ++ ammonite
 
 // ---- publising ----

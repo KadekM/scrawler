@@ -17,7 +17,9 @@ trait ParallelCrawlingCapability[F[_], A] {
   def parallelCrawl(url: String, maxConnections: Int): Stream[F, A]
 }
 
-abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F]) extends SequentialCrawlingCapability[F, A] with ParallelCrawlingCapability[F, A] {
+abstract class Crawler[F[_], A](browser: Browser[F])(implicit FI: Async[F])
+    extends SequentialCrawlingCapability[F, A]
+    with ParallelCrawlingCapability[F, A] {
 
   protected def onDocument(document: Document): Stream[F, Yield[A]]
 
