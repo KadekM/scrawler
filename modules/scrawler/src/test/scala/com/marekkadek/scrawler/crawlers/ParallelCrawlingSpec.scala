@@ -14,12 +14,12 @@ trait ParallelCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
 
   "something" - {
     "somewhere" ignore {
-      bot.parallelCrawl("http://www.github.com", maxConnections = 8)
-        .evalMap(x => Task.delay { println(x); x } )
+      bot
+        .parallelCrawl("http://www.github.com", maxConnections = 8)
+        .evalMap(x => Task.delay { println(x); x })
         .take(5)
         .run
         .unsafeRun
     }
   }
 }
-

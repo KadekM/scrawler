@@ -13,25 +13,25 @@ trait CompareCrawling extends ScrawlerTest with BrowserAgnostic[Task] {
 
     "parallel should be faster" in {
       val crawler = new HttpsLinksInfiniteCrawler(browser)
-      val url = randomUrl.unsafeRun
+      val url     = randomUrl.unsafeRun
 
       val amount = 5L
 
-      val t1  = System.nanoTime
+      val t1 = System.nanoTime
       crawler.sequentialCrawl(url).take(amount).run.unsafeRun
       val t1e = System.nanoTime
-      val d1 = t1e-t1
+      val d1  = t1e - t1
 
-      val t2  = System.nanoTime
+      val t2 = System.nanoTime
       crawler.parallelCrawl(url, maxConnections = 8).take(amount).run.unsafeRun
       val t2e = System.nanoTime
-      val d2 = t2e-t2
+      val d2  = t2e - t2
 
       info(s"crawling $url")
-      info(s"sequential crawl time: ${d1/1000000.0}s")
-      info(s"parallel crawl time: ${d2/1000000.0}s")
+      info(s"sequential crawl time: ${d1 / 1000000.0}s")
+      info(s"parallel crawl time: ${d2 / 1000000.0}s")
       // at least twice as fast
-      2*d2 should be < d1
+      2 * d2 should be < d1
     }
   }
 }

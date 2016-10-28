@@ -61,7 +61,7 @@ class SomeTest extends ScrawlerTest {
     }
 
     "parallel crawler on wiki links" ignore {
-      val url = "https://en.wikipedia.org/wiki/Main_Page"
+      val url                     = "https://en.wikipedia.org/wiki/Main_Page"
       val maxOpenConnections: Int = 30
 
       val wikiCrawler = new Crawler[Task, String](browser) {
@@ -79,8 +79,9 @@ class SomeTest extends ScrawlerTest {
       val result = wikiCrawler
         .parallelCrawl(url, maxOpenConnections)
         .take(100)
-        .evalMap(x => Task.delay { println(s"${Thread.currentThread} $x");x })
-        .run.unsafeRun
+        .evalMap(x => Task.delay { println(s"${Thread.currentThread} $x"); x })
+        .run
+        .unsafeRun
       println("done")
     }
   }

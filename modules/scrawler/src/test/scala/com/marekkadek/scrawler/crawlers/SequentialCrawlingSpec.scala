@@ -13,8 +13,9 @@ trait SequentialCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
 
   "something" - {
     "somewhere" ignore {
-      bot.sequentialCrawl("http://www.github.com")
-        .evalMap(x => Task.delay { println(x); x } )
+      bot
+        .sequentialCrawl("http://www.github.com")
+        .evalMap(x => Task.delay { println(x); x })
         .take(5)
         .run
         .unsafeRun
