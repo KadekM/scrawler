@@ -34,6 +34,14 @@ class MyCrawler extends Crawler[Task, String](Seq(JsoupBrowser[Task])) {
   }
 }
 ```
+
+We are streaming actions such as `YieldData` and `Visit`, which are currently only two allowed. Here's how Yield is defined:
+
+```scala
+sealed trait Yield[+A]
+final case class YieldData[A](a: A) extends Yield[A]
+final case class Visit(url: String) extends Yield[Nothing]
+```
 We can execute either sequential or parallel crawling.
 
 ```scala
