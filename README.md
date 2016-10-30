@@ -6,7 +6,7 @@
 # Install
 
 ```scala
-libraryDependencies += "com.marekkadek" %% "scrawler" % "0.0.2"
+libraryDependencies += "com.marekkadek" %% "scrawler" % "0.0.3"
 ```
 
 Library cross compiles for Scala 2.11 and 2.12.
