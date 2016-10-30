@@ -4,10 +4,13 @@ import com.gargoylesoftware.htmlunit.BrowserVersion
 import com.marekkadek.scraper.Browser
 import com.marekkadek.scraper.htmlunit.HtmlUnitBrowser
 import com.marekkadek.scraper.jsoup.JsoupBrowser
+import scala.concurrent.duration._
 import fs2._
 
 class JsoupSequentialCrawlingSpec extends SequentialCrawlingSpec {
-  override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task](validateTLSCertificates = false))
+  override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task](
+    validateTLSCertificates = false,
+    connectionTimeout = 10.seconds))
 }
 
 /*class HtmlUnitSequentialCrawlingSpec extends SequentialCrawlingSpec {
@@ -15,7 +18,9 @@ class JsoupSequentialCrawlingSpec extends SequentialCrawlingSpec {
 }*/
 
 class JsoupParallelCrawlingSpec extends ParallelCrawlingSpec {
-  override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task](validateTLSCertificates = false))
+  override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task](
+    validateTLSCertificates = false,
+    connectionTimeout = 10.seconds))
 }
 
 /*class HtmlUnitParallelCrawlingSpec extends SequentialCrawlingSpec {
@@ -23,5 +28,7 @@ class JsoupParallelCrawlingSpec extends ParallelCrawlingSpec {
 }*/
 
 class JsoupCompareCrawlingSpec extends CompareCrawling {
-  override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task](validateTLSCertificates = false))
+  override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task](
+    validateTLSCertificates = false,
+    connectionTimeout = 10.seconds))
 }
