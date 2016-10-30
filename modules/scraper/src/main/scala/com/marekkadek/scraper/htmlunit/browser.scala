@@ -19,6 +19,8 @@ sealed class HtmlUnitBrowser[F[_]] private (val proxySettings: Option[HttpProxy]
       case None        => new WebClient(browserVersion)
     }
 
+    client.getOptions.setThrowExceptionOnScriptError(false)
+
     val window = client.openTargetWindow(client.getCurrentWindow, null, UUID.randomUUID().toString)
 
     val urll    = new URL(url)

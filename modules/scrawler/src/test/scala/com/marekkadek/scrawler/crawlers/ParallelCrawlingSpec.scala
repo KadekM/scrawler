@@ -1,9 +1,7 @@
 package com.marekkadek.scrawler.crawlers
 
-import com.marekkadek.scraper.Browser
-import com.marekkadek.scrawler.ScrawlerTest
+import com.marekkadek.scrawler._
 import fs2.Strategy
-import fs2.util._
 import fs2._
 
 trait ParallelCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
@@ -12,11 +10,11 @@ trait ParallelCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
 
   val bot: ParallelCrawlingCapability[Task, String] = new HttpsLinksInfiniteCrawler(browsers)
 
-  "something" - {
-    "somewhere" ignore {
+  "parallel crawling" - {
+    "printing" in {
       bot
-        .parallelCrawl("http://www.github.com", maxConnections = 8)
-        .evalMap(x => Task.delay { println(x); x })
+        .parallelCrawl(opencrawling.randomUrl.unsafeRun, maxConnections = 8)
+        .evalMap(x => Task.delay { info(s"crawled: $x"); x })
         .take(5)
         .run
         .unsafeRun

@@ -10,17 +10,17 @@ class JsoupSequentialCrawlingSpec extends SequentialCrawlingSpec {
   override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task])
 }
 
-class HtmlUnitSequentialCrawlingSpec extends SequentialCrawlingSpec {
+/*class HtmlUnitSequentialCrawlingSpec extends SequentialCrawlingSpec {
   override def browsers: Seq[Browser[Task]] = Seq(HtmlUnitBrowser[Task](BrowserVersion.CHROME))
-}
+}*/
 
 class JsoupParallelCrawlingSpec extends ParallelCrawlingSpec {
   override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task])
 }
 
-class HtmlUnitParallelCrawlingSpec extends SequentialCrawlingSpec {
+/*class HtmlUnitParallelCrawlingSpec extends SequentialCrawlingSpec {
   override def browsers: Seq[Browser[Task]] = Seq(HtmlUnitBrowser[Task](BrowserVersion.CHROME))
-}
+}*/
 
 class JsoupCompareCrawlingSpec extends CompareCrawling {
   override def browsers: Seq[Browser[Task]] = Seq(JsoupBrowser[Task])
