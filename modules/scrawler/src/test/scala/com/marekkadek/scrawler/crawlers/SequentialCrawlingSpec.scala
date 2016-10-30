@@ -1,8 +1,6 @@
 package com.marekkadek.scrawler.crawlers
 
-import com.marekkadek.scraper.Browser
-import com.marekkadek.scrawler.ScrawlerTest
-
+import com.marekkadek.scrawler.{ScrawlerTest, opencrawling}
 import fs2._
 
 trait SequentialCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
@@ -11,11 +9,11 @@ trait SequentialCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
 
   val bot: SequentialCrawlingCapability[Task, String] = new HttpsLinksInfiniteCrawler(browsers)
 
-  "something" - {
-    "somewhere" ignore {
+  "sequential crawling" - {
+    "printing" in {
       bot
-        .sequentialCrawl("http://creativecommons.org/licenses/by-sa/3.0/")
-        .evalMap(x => Task.delay { println(x); x })
+        .sequentialCrawl(opencrawling.randomUrl.unsafeRun)
+        .evalMap(x => Task.delay { info(s"crawled: $x"); x })
         .take(5)
         .run
         .unsafeRun

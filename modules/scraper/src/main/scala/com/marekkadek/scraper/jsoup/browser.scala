@@ -22,7 +22,8 @@ sealed class JsoupBrowser[F[_]] private (val proxySettings: Option[ProxySettings
       con.followRedirects(followRedirects)
       con.validateTLSCertificates(validateTLSCertificates)
       con.ignoreHttpErrors(true) // do not throw exceptions in `execute`
-      proxySettings.foreach(x => con.proxy(x.proxy))
+      con.ignoreContentType(true)
+      proxySettings.foreach(x => con.proxy(x.toProxy))
       con.timeout(connectionTimeout.toMillis.toInt)
 
       val r = con.execute()
