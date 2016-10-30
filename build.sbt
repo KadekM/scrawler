@@ -65,6 +65,7 @@ val commonSettings = Seq(
     organization := "com.marekkadek",
     scalaVersion := scalaV,
     crossScalaVersions := crossScalaV,
+    releaseCrossBuild := true,
     scalacOptions := Seq(
       // following two lines must be "together"
       "-encoding",
