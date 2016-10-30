@@ -3,21 +3,19 @@ package com.marekkadek.scraper
 import java.net._
 
 object proxy {
-  sealed abstract case class ProxySettings(proxy: Proxy)
+  sealed trait ProxySettings {
+    def toProxy: Proxy
+  }
 
-  object ProxySettings {
+  final case class HttpProxy(host: String, port: Int) extends ProxySettings {
+    override def toProxy: Proxy = new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, port))
+  }
 
-    def http(host: String, port: Int): ProxySettings = {
-      val proxy = new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host, port))
-      new ProxySettings(proxy) {}
-    }
+  final case class SocksProxy(address: InetSocketAddress) extends ProxySettings {
+    override def toProxy: Proxy = new Proxy(Proxy.Type.SOCKS, address)
+  }
 
-    def socks(address: InetSocketAddress): ProxySettings = {
-      val proxy = new Proxy(Proxy.Type.SOCKS, address)
-      new ProxySettings(proxy) {}
-    }
-
-    def none: ProxySettings = new ProxySettings(java.net.Proxy.NO_PROXY) {}
-
+  case object NoProxy extends ProxySettings {
+    override def toProxy: Proxy = Proxy.NO_PROXY
   }
 }

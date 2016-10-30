@@ -2,7 +2,7 @@ package com.marekkadek.scrawler.crawlers
 
 import com.marekkadek.scraper._
 import com.marekkadek.scraper.jsoup.JsoupBrowser
-import com.marekkadek.scraper.proxy.ProxySettings
+import com.marekkadek.scraper.proxy.{HttpProxy, ProxySettings}
 import com.marekkadek.scrawler.ScrawlerTest
 import fs2._
 
@@ -27,7 +27,7 @@ class JsoupProxyPickingTest extends ScrawlerTest {
 
   // from http://proxylist.hidemyass.com
   val proxies: Seq[ProxySettings] = Seq(
-    ProxySettings.http("122.193.14.106", 81)
+    HttpProxy("122.193.14.106", 81)
   )
 
   "proxy configuration" - {
