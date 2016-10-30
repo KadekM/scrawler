@@ -30,7 +30,7 @@ class JsoupProxyPickingTest extends ScrawlerTest {
     HttpProxy("122.193.14.106", 81)
   )
 
-  "proxy configuration" - {
+  "proxy configuration" ignore {
     "should be configurable per browser" - {
       proxies match {
         case fst :: _ =>
