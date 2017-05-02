@@ -10,7 +10,7 @@ trait SequentialCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
   val bot: SequentialCrawlingCapability[Task, String] = new HttpsLinksInfiniteCrawler(browsers)
 
   "sequential crawling" - {
-    "printing" in {
+    "printing" ignore {
       bot
         .sequentialCrawl(opencrawling.randomUrl.unsafeRun)
         .evalMap(x => Task.delay { info(s"crawled: $x"); x })

@@ -14,7 +14,6 @@ val simulacrumPlugin = Seq(
 
 // ---- formatting ----
 scalaVersion in ThisBuild := scalaV
-scalafmtConfig in ThisBuild := Some(file(".scalafmt.conf"))
 
 // ---- ammonite ----
 val ammonite = Seq(
@@ -51,6 +50,22 @@ val wartRemover = Seq(
     Var,
     While
   )
+)
+// ---- release process ----
+
+import ReleaseTransformations._
+
+releaseProcess in ThisBuild := Seq[ReleaseStep](
+  checkSnapshotDependencies,              // : ReleaseStep
+  inquireVersions,                        // : ReleaseStep
+  //runTest,                                // : ReleaseStep
+  setReleaseVersion,                      // : ReleaseStep
+  commitReleaseVersion,                   // : ReleaseStep, performs the initial git checks
+  tagRelease,                             // : ReleaseStep
+  publishArtifacts,                       // : ReleaseStep, checks whether `publishTo` is properly set up
+  setNextVersion,                         // : ReleaseStep
+  commitNextVersion,                      // : ReleaseStep
+  pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
 )
 
 // ---- common settings ----
@@ -128,10 +143,10 @@ lazy val scraper = Project(id = "scraper", base = file("modules/scraper")).setti
   publishSettings,
   libraryDependencies ++= Seq(
     "co.fs2"                   %% "fs2-core" % "0.9.5",
-    "org.jsoup"                % "jsoup"     % "1.10.1",
-    "net.sourceforge.htmlunit" % "htmlunit"  % "2.23",
+    "org.jsoup"                % "jsoup"     % "1.10.2",
+    "net.sourceforge.htmlunit" % "htmlunit"  % "2.26",
     //"org.typelevel" %% "cats" % "0.7.2",
-    "org.scalatest" %% "scalatest" % "3.0.0" % Test
+    "org.scalatest" %% "scalatest" % "3.0.3" % Test
   )
 )
 
