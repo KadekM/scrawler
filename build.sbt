@@ -1,5 +1,5 @@
-val scalaV      = "2.11.8"
-val crossScalaV = Seq("2.11.8", "2.12.0-RC2")
+val scalaV      = "2.11.11"
+val crossScalaV = Seq("2.11.11", "2.12.2")
 
 // ---- kind projector for nicer type lambdas ----
 val kindProjectorPlugin = Seq(
@@ -133,7 +133,7 @@ lazy val scraper = Project(id = "scraper", base = file("modules/scraper")).setti
   commonSettings,
   publishSettings,
   libraryDependencies ++= Seq(
-    "co.fs2"                   %% "fs2-core" % "0.9.1",
+    "co.fs2"                   %% "fs2-core" % "0.9.5",
     "org.jsoup"                % "jsoup"     % "1.10.1",
     "net.sourceforge.htmlunit" % "htmlunit"  % "2.23",
     //"org.typelevel" %% "cats" % "0.7.2",
