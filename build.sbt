@@ -1,9 +1,9 @@
-val scalaV      = "2.11.11"
+val scalaV      = "2.12.2"
 val crossScalaV = Seq("2.11.11", "2.12.2")
 
 // ---- kind projector for nicer type lambdas ----
 val kindProjectorPlugin = Seq(
-  addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.2")
+  addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 )
 
 // ---- library for nicer typeclasses
@@ -28,7 +28,6 @@ import wartremover.Wart._
 val wartRemover = Seq(
   wartremoverWarnings in (Compile, compile) := Seq(
     Any,
-    Any2StringAdd,
     AsInstanceOf,
     DefaultArguments,
     EitherProjectionPartial,
@@ -40,15 +39,10 @@ val wartRemover = Seq(
     IsInstanceOf,
     JavaConversions,
     LeakingSealed,
-    ListOps,
     MutableDataStructures,
-    NoNeedForMonad,
-    //NonUnitStatements,
-    //Nothing,
     Null,
     Option2Iterable,
     OptionPartial,
-    Overloading,
     Product,
     Return,
     Serializable,

@@ -11,7 +11,7 @@ trait ParallelCrawlingSpec extends ScrawlerTest with BrowserAgnostic[Task] {
   val bot: ParallelCrawlingCapability[Task, String] = new HttpsLinksInfiniteCrawler(browsers)
 
   "parallel crawling" - {
-    "printing" in {
+    "printing" ignore { // todo: temporarily
       bot
         .parallelCrawl(opencrawling.randomUrl.unsafeRun, maxConnections = 8)
         .evalMap(x => Task.delay { info(s"crawled: $x"); x })
