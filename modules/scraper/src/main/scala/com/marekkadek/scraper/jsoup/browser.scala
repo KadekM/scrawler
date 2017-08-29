@@ -14,11 +14,11 @@ sealed class JsoupBrowser[F[_]] private (val proxySettings: Option[ProxySettings
                                          userAgent: String,
                                          followRedirects: Boolean,
                                          validateTLSCertificates: Boolean,
-                                         referrer: Option[String],
-                                         cookiesProvider: Option[() => Map[String, String]],
-                                         cookiesConsumer: Option[Map[String, String] => Unit],
-                                         headersProvider: Option[() => Map[String, String]],
-                                         headersConsumer: Option[Map[String, String] => Unit]
+                                         referrer: String,
+                                         cookiesProvider: () => Map[String, String],
+                                         cookiesConsumer: Map[String, String] => Unit,
+                                         headersProvider: () => Map[String, String],
+                                         headersConsumer: Map[String, String] => Unit
                                         )(implicit FI: Effect[F])
     extends Browser[F] {
 
@@ -31,16 +31,16 @@ sealed class JsoupBrowser[F[_]] private (val proxySettings: Option[ProxySettings
       con.validateTLSCertificates(validateTLSCertificates)
       con.ignoreHttpErrors(true) // do not throw exceptions in `execute`
       con.ignoreContentType(true)
-      cookiesProvider.foreach(c => con.cookies(c().asJava))
-      headersProvider.foreach(h => con.headers(h().asJava))
-      referrer.foreach(con.referrer)
+      con.cookies(cookiesProvider().asJava)
+      con.headers(headersProvider().asJava)
+      con.referrer(referrer)
       proxySettings.foreach(x => con.proxy(x.toProxy))
       con.timeout(connectionTimeout.toMillis.toInt)
 
       val r = con.execute()
 
-      cookiesConsumer.foreach(c => c(r.cookies().asScala.toMap[String, String]))
-      headersConsumer.foreach(h => h(r.headers().asScala.toMap[String, String]))
+      cookiesConsumer(r.cookies().asScala.toMap[String, String])
+      headersConsumer(r.headers().asScala.toMap[String, String])
 
       JsoupDocument(r.parse)
     }
@@ -55,11 +55,12 @@ object JsoupBrowser {
                           userAgent: String = "Mozilla",
                           followRedirects: Boolean = true,
                           validateTLSCertificates: Boolean = true,
-                          referrer: Option[String] = Option.empty,
-                          cookiesProvider: Option[() => Map[String, String]] = Option.empty,
-                          cookiesConsumer: Option[Map[String, String] => Unit] = Option.empty,
-                          headersProvider: Option[() => Map[String, String]] = Option.empty,
-                          headersConsumer: Option[Map[String, String] => Unit] = Option.empty): JsoupBrowser[F] =
+                          referrer: String = "",
+                          cookiesProvider: () => Map[String, String] = () => Map.empty[String, String],
+                          cookiesConsumer: Map[String, String] => Unit = _ => {},
+                          headersProvider: () => Map[String, String] = () => Map.empty[String, String],
+                          headersConsumer: Map[String, String] => Unit = _ => {}
+                         ): JsoupBrowser[F] =
     new JsoupBrowser[F](proxySettings,
                         connectionTimeout,
                         userAgent,
